@@ -59,7 +59,7 @@ function formSubmitHandler() {
 // Get data
 function getGeocodeData(cityName) {
         // check to see if cityName is already in local storage
-        var geocodeRequestUrl = `http://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=7013ba507325d4539fec0418a1dfc028`
+        var geocodeRequestUrl = `https://api.openweathermap.org/geo/1.0/direct?q=${cityName}&appid=7013ba507325d4539fec0418a1dfc028`
         
         fetch(geocodeRequestUrl)
         .then(function(response) {
