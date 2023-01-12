@@ -4,6 +4,8 @@
 var weatherListEls = document.querySelectorAll(".weatherList")
 
 // Fetch the weather API, collect the data for the given location for today and the next 5 days (all at noon). Select temp, wind, humidity, and icon, and store them as global variables.
+
+// NEED TO: save the li's  locally w/ name key
 function getWeatherData(lat, lon) {
         let weatherRequestUrl =  `https://api.openweathermap.org/data/2.5/forecast?lat=${lat}&lon=${lon}&units=imperial&start=&appid=7013ba507325d4539fec0418a1dfc028`;
         fetch(weatherRequestUrl)
@@ -16,7 +18,7 @@ function getWeatherData(lat, lon) {
                 })
 }
 
-function displayForecast(test) {
+function displayForecast(data) {
         var indices = [0, 8, 16, 24, 32, 39]
         for (i = 0; i < weatherListEls.length; i++) {
                 var currentList = weatherListEls[i]
@@ -26,9 +28,9 @@ function displayForecast(test) {
                         currentList.removeChild(currentList.firstChild)
                 }
 
-                var temp = "Temp: " + test.list[indices[i]].main.temp
-                var wind = "Wind: " + test.list[indices[i]].wind.speed
-                var humidity = "Humidity: " + test.list[indices[i]].main.humidity
+                var temp = "Temp: " + data.list[indices[i]].main.temp
+                var wind = "Wind: " + data.list[indices[i]].wind.speed
+                var humidity = "Humidity: " + data.list[indices[i]].main.humidity
                 var arr = [temp, wind, humidity]
 
                 for (x = 0; x < arr.length; x++){
@@ -51,8 +53,19 @@ userFormEl.addEventListener("click", formSubmitHandler);
 function formSubmitHandler() {
         var cityNameEl = document.querySelector("#cityName");
         cityNameValue = cityNameEl.value.trim()
+        let storage = JSON.parse(localStorage.getItem("searchHistoryData"))
         // need an if checker to see if cityNameValue is in a button, if not, make it a button--needs to be here to avoid unnecessary function calls.
-        getGeocodeData(cityNameValue)
+        if (storage == true) {
+                if (cityNameValue in storage) {
+                        let lat = storage[cityNameValue[0]]
+                        let lon = storage[cityNameValue[1]]
+                        getWeatherData(lat, lon)
+                } else {
+                        getGeocodeData(cityNameValue)
+                }
+        } else {
+                getGeocodeData(cityNameValue)
+        }
 }
 
 
@@ -76,6 +89,8 @@ function getGeocodeData(cityName) {
         })
 }
 
+
+// ** This creates a button with a city name. The lat and lon of the city named is stored locally and is retrieveable on button click
 var searchHistoryEl = document.querySelector("#searchHistory")
 var searchHistoryData = {}
 
@@ -90,6 +105,9 @@ function createSearchButton(name, lat, lon) {
         btn.addEventListener("click", function(){
                 var storage = JSON.parse(localStorage.getItem("searchHistoryData"))
                 var key = this.getAttribute("id")
-                console.log(storage[key])
+                getWeatherData(lat, lon)
         })
 }
+
+
+var test = JSON.parse(localStorage.getItem("searchHistoryData"))
